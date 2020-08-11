@@ -1,0 +1,125 @@
+---
+title: "COVID-19 global"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: readable
+    source_code: embed
+    navbar:
+      - { title: "Source: European Center for Disease Control (ECDC)", href: "https://www.ecdc.europa.eu/en/covid-19-pandemic", align: right }
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(lubridate)
+library(forcats)
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+```
+
+Column
+-----------------------------------------------------------------------
+
+### Total COVID-19 cases per country
+
+```{r}
+# get latest data
+# FROM: https://www.ecdc.europa.eu
+data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM", stringsAsFactors = F)
+# convert date format
+data$date_reported <- mdy(paste0(data$month,"-",data$day,"-",data$year))
+
+# total cases and max single day by country
+fig <- data %>%
+ group_by(countriesAndTerritories) %>%
+ summarise(cases_sum = sum(cases), cases_max = max(cases)) %>%
+ mutate(countriesAndTerritories = fct_reorder(countriesAndTerritories, cases_sum)) %>%
+  plot_ly(x = ~cases_sum,
+          y = ~countriesAndTerritories,
+          color = ~countriesAndTerritories,
+          colors = 'Reds',
+          type = "bar")
+fig %>% layout(
+         xaxis = list(title = "total cases"),
+         yaxis = list(title = "country"))
+fig
+
+```
+
+### Total COVID-19 cases and deaths (hover for more info)
+
+```{r}
+#build interactive global map 
+df <- data %>% 
+ group_by(countriesAndTerritories, countryterritoryCode) %>% 
+ summarise(cases = sum(cases), deaths = sum(deaths))
+
+df$hover <- with(df, paste(countriesAndTerritories, "<br>", "cases", cases, "<br>", "deaths", deaths))
+l <- list(color = toRGB("grey"), width = 0.5)
+
+g <- list(
+  showframe = FALSE,
+  showcoastlines = TRUE,
+  projection = list(type = 'Mercator')
+)
+
+fig <- plot_geo(df) %>%
+  add_trace(
+    z = ~cases, color = ~cases, colors = 'Reds',
+    text = ~hover, locations = ~countryterritoryCode, marker = list(line = l)
+  ) %>%
+  colorbar(title = 'confirmed cases') %>%
+  layout(
+    geo = g
+  )
+
+fig
+
+```
+
+
+Column 
+-----------------------------------------------------------------------
+
+### Daily COVID-19 cases in US
+
+```{r}
+# cases by date for US
+us <- data[data$countriesAndTerritories == "United_States_of_America",]
+fig <- plot_ly(us, 
+               x = ~date_reported,
+               y = ~cases, 
+               type = "bar")
+fig <- fig %>%layout(
+         xaxis = list(title = "date"),
+         yaxis = list(title = "cases"))
+fig
+       
+# deaths by date for US
+us <- data[data$countriesAndTerritories == "United_States_of_America",]
+fig <- plot_ly(us, 
+               x = ~date_reported,
+               y = ~deaths, 
+               type = "bar")
+fig <- fig %>% layout(
+         xaxis = list(title = "date"),
+         yaxis = list(title = "deaths"))
+fig
+```
+
+### Daily COVID-19 deaths in US
+
+```{r}
+     # deaths by date for US
+us <- data[data$countriesAndTerritories == "United_States_of_America",]
+fig <- plot_ly(us, 
+               x = ~date_reported,
+               y = ~deaths, 
+               type = "bar")
+fig <- fig %>% layout(
+         xaxis = list(title = "date"),
+         yaxis = list(title = "deaths"))
+fig
+```
+
+
