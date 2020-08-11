@@ -8,11 +8,11 @@ Note the relative link starting with a slash before the html file.
 The index.md is used to customize the github page's home page, 
 The following link directs to the slide.
 
-Code: `[slide link](/NI_experiment_20200622.html)`
+Code: `[slide link](/covid-19_flexdashboard)`
 
 Result:
 
-[slide link](/NI_experiment_20200622.html)
+[slide link](/covid-19_flexdashboard.html)
 
 
 ### Embed
