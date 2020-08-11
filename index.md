@@ -8,11 +8,11 @@ Note the relative link starting with a slash before the html file.
 The index.md is used to customize the github page's home page, 
 The following link directs to the slide.
 
-Code: `[slide link](/covid-19_flexdashboard.html)`
+Code: `[slide link](/covid-19_global.html)`
 
 Result:
 
-[slide link](/covid-19_flexdashboard.html)
+[slide link](/covid-19_global.html)
 
 
 ### Embed
@@ -71,7 +71,7 @@ Result:
 </style>
 
 <div class="resp-container">
-    <iframe class="testiframe" src="https://ruthlys.github.io/covid-19_flexdashboard/">
+    <iframe class="testiframe" src="https://ruthlys.github.io/covid-19_flexdashboard/covid-19_global.html">
       Fallback text here for unsupporting browsers, of which there are scant few.
     </iframe>
 </div>
